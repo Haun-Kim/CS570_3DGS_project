@@ -73,4 +73,6 @@ if __name__ == "__main__":
     # Initialize system state (RNG)
     safe_state(args.quiet)
 
-    render_sets(model.extract(args), args.iteration, pipeline.extract(args), args.skip_train, args.skip_test)
+    fps = render_sets(model.extract(args), args.iteration, pipeline.extract(args), args.skip_train, args.skip_test)
+    print(f"FPS (train) : {fps['train']:.5f}" )
+    print(f"FPS (test) : {fps['test']:.5f}")

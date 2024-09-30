@@ -16,12 +16,8 @@ from utils.system_utils import searchForMaxIteration
 from scene.dataset_readers import sceneLoadTypeCallbacks
 from scene.gaussian_model import GaussianModel
 from scene.gaussian_model_compact_3dgs import Compact_3DGS
-from scene.gaussian_model_light_gaussian import LightGaussian
-from scene.gaussian_model_random_prune import RandomPrune
-from scene.gaussian_model_mini_splatting import MiniSplatting
 from scene.gaussian_model_rad_splat import RadSplat
-# from scene.gaussian_model_revising_densification import RevisingDensification
-from scene.gaussian_model_top_k import TopKGaussian
+from scene.gaussian_model_ours import OurModel
 from arguments import ModelParams
 from utils.camera_utils import cameraList_from_camInfos, camera_to_JSON
 
@@ -103,6 +99,6 @@ class Scene:
 ModelPool = {
     '3dgs': GaussianModel,
     'compact_3dgs': Compact_3DGS,
-    'mini_splatting': MiniSplatting,
     'rad_splat': RadSplat,
+    'ours': OurModel,
 }

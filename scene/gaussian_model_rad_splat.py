@@ -3,7 +3,7 @@
 # GRAPHDECO research group, https://team.inria.fr/graphdeco
 # All rights reserved.
 #
-# This software is free for non-commercial, research and evaluation use 
+# This software is free for non-commercial, research and evaluation use
 # under the terms of the LICENSE.md file.
 #
 # For inquiries contact  george.drettakis@inria.fr
@@ -37,7 +37,7 @@ class RadSplat(GaussianModel):
     def get_score_before_render(self, opt, scene=None, pipe=None, background=None, render=None):
         self.importance_mask.important_score = self.prune_list(scene, pipe, background, render)
         self.opacity_activation = self.opacity_with_mask_activation
-    
+
     def prune_gaussians(self, percent, import_score: list):
         sorted_tensor, _ = torch.sort(import_score, dim=0)
         index_nth_percentile = int(percent * (sorted_tensor.shape[0] - 1))
@@ -56,11 +56,14 @@ class RadSplat(GaussianModel):
                 self.set_mask(opt)
             if iteration == opt.prune_iterations[0]+opt.train_mask_iters:
                 prune_mask = (self.importance_mask.get_prune_mask < 0.5).squeeze()
+                # prune_mask = torch.logical_or((torch.sigmoid(self._mask) <= 0.01).squeeze(),
+                #                               (self.get_opacity < min_opacity).squeeze())
                 self.prune_points(prune_mask)
                 torch.save(self.importance_mask._mask, "_maskrad.pt")
                 torch.save(self.importance_mask.important_score, "important_scorerad.pt")
                 self.opacity_activation = torch.sigmoid
-    
+
+
     def addtional_loss(self, opt):
         # return 0.0005 * torch.mean(self.importance_mask.get_prune_mask)
         return 0.0005 * torch.mean((torch.sigmoid(self.importance_mask._mask)))

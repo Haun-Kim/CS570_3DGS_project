@@ -62,6 +62,8 @@ def render(viewpoint_camera, pc : GaussianModel, pipe, bg_color : torch.Tensor, 
     scales = None
     rotations = None
     cov3D_precomp = None
+    # print("HERE!!!!!!")
+    # print(pipe.compute_cov3D_python)
     if pipe.compute_cov3D_python:
         cov3D_precomp = pc.get_covariance(scaling_modifier)
         opacity = pc.get_opacity

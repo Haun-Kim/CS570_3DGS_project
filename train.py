@@ -89,7 +89,7 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
         # print(iteration, gaussians._opacity.shape)
         bg = torch.rand((3), device="cuda") if opt.random_background else background
 
-        if (dataset.prune_method == "mini_splatting" or dataset.prune_method == "rad_splat") and use_importance_mask == True:
+        if (dataset.prune_method == "ours" or dataset.prune_method == "rad_splat") and use_importance_mask == True:
             if iteration > opt.prune_iterations[0] and iteration < opt.prune_iterations[0] + opt.train_mask_iters and ((iteration-opt.prune_iterations[0])%20==0):
                 gaussians.get_score_before_render(opt, scene=scene, pipe=pipe, background=bg, render=render)
 
@@ -131,12 +131,14 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
 
                 if iteration > opt.densify_from_iter and iteration % opt.densification_interval == 0:
                     size_threshold = 20 if iteration > opt.opacity_reset_interval else None
-                    gaussians.densify_and_prune(opt.densify_grad_threshold, 0.005, scene.cameras_extent, size_threshold, opt.n_split, scene=scene, pipe=pipe, background=bg, render=render, opt=opt)
+                    gaussians.densify_and_prune(opt.densify_grad_threshold, 0.005, scene.cameras_extent, size_threshold)
                 
                 if iteration % opt.opacity_reset_interval == 0 or (dataset.white_background and iteration == opt.densify_from_iter):
                     gaussians.reset_opacity()
-            gaussians.prune_after_render(opt, iteration, scene=scene, pipe=pipe, background=bg, render=render, use_importance_mask=use_importance_mask)
 
+            gaussians.prune_after_render(opt, iteration, scene=scene, pipe=pipe, background=bg, render=render, use_importance_mask=use_importance_mask)
+            # Compact 3dgs
+            # gaussians.prune_after_render(opt, iteration, scene=scene, pipe=pipe, background=bg, render=render)
             # Optimizer step
             if iteration < opt.iterations:
                 if iteration > opt.prune_iterations[0] and iteration < opt.prune_iterations[0] + opt.train_mask_iters and use_importance_mask == True:
@@ -251,11 +253,6 @@ if __name__ == "__main__":
         args.prune_method = wandb.config.prune_method
         args.preserving_ratio = wandb.config.preserving_ratio
         args.port = randint(6000, 8000)
-
-    # specific setup for compact_3dgs
-    if args.prune_method is 'compact_3dgs' and 'nerf_synthetic' in args.model_path:
-        args.lambda_mask = 4e-3
-        args.mask_lr = 1e-3
 
     # check prune_method
     if args.prune_method not in list(ModelPool.keys()):

@@ -86,22 +86,16 @@ class OptimizationParams(ParamGroup):
         self.opacity_reset_interval = 3000
         self.densify_from_iter = 500
         self.densify_until_iter = 15_000
+        # self.densify_until_iter = 2_000 # for test
         self.densify_grad_threshold = 0.0002
         self.random_background = False
         ### compact_3dgs
         self.mask_lr = 0.01
         self.mask_prune_iter = 1_000
+        # self.mask_prune_iter = 100 # for test
         self.lambda_mask = 0.0005
-        ### random_prune
-        self.random_prune_ratio = 0.1
-        ### mini_splatting
-        self.simplification_iteration1 = 15_000
-        self.simplification_iteration2 = 20_000
-        self.preserving_ratio = 0.1
-        ### rad_splat
-        self.rad_prune_threshold = 0.01 # 0.25 for light-weight model
-        self.rad_prune_iterations = [19_500]
-        ### lp-3dgs
+
+        ### lp3d
         self.prune_iterations = [19_500]
         self.prune_use_percent_iterations = [20_000]
         self.prune_percent = 0.6
